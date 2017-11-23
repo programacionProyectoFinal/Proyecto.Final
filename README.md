@@ -150,6 +150,56 @@ public class SepararNombreApellido extends ConsoleProgram {
 		}
 		
       }
+      
+      
+      nueva clase estudiantes
+      package excel_apachePOI;
+
+import acm.program.*;
+
+public class Obj_estudiante  {
+	
+	
+		private String Apellido;
+		
+		private int Doc;
+		
+		private String Nombre;
+		
+		public Obj_estudiante (String nombre,String apellido,int doc)
+		{
+			Doc = doc ;
+			Apellido = apellido;
+			Nombre = nombre;
+		}
+
+		public String getApellido() {
+			return Apellido;
+		}
+
+		public void setApellido(String apellido) {
+			Apellido = apellido;
+		}
+
+		public int getDoc() {
+			return Doc;
+		}
+
+		public void setDoc(int doc) {
+			Doc = doc;
+		}
+
+		public String getNombre() {
+			return Nombre;
+		}
+
+		public void setNombre(String nombre) {
+			Nombre = nombre;
+		}
+		
+		
+
+}
 
 
 
