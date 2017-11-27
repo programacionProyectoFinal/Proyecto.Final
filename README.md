@@ -9,6 +9,8 @@ Los proximos avances del codigo serán los siguientes:
   3. crearemos los metodos que llevará el programa principal, los cuales serán capaces de recorrer la lista con ayuda de un for y
   comparar los datos entre hojas de Excel 
   4. generaremos la alerta que indicará cuando algún dato no exista y nos muestre las sugerencias de cómo corregir dicho error.
+  
+Por fin podemos leer datos de una hoja excel para extraerlos en forma de ArrayList y asociarcelos al objeto de la clase Estudiante. Con esto ya obtendremos acceso a la información de cada estudiante en los archivos de la sala Nash
 
 
 Clase para crear hojas de Excel:
@@ -154,52 +156,188 @@ public class SepararNombreApellido extends ConsoleProgram {
       
       nueva clase estudiantes
       package excel_apachePOI;
-
+Hemos modificado la clase Estudiantes para que reciba un ArrayList, desconponga sus datos y extraiga los datos que sean necesarios. De momento ese ArrayList sólo cuenta con los datos: Documento, apellido, nombre (suponemos también que los datos extraídos siempre vienen en ese orden para no tener incoherencias).
 import acm.program.*;
 
-public class Obj_estudiante  {
+package miEstudiante;
+
+import java.util.ArrayList;
+
+public class Estudiante {
+	private double documento;
+	private String apellido;
+	private String nombre;
+	private ArrayList datos;
+	// Suponiendo que el orden del ArrayList es [documento, apellido, nombre]
+	public Estudiante(ArrayList misDatos) {
+		datos = misDatos;
+		this.documento = (double) misDatos.get(0);
+		this.apellido = (String) misDatos.get(1);
+		this.nombre = (String) misDatos.get(2);
+		
+	}
+
+	public double getDocumento() {
+		return documento;
+	}
+
+	public void setDocumento(double documento) {
+		this.documento = documento;
+	}
+
+	public String getApellido() {
+		return apellido;
+	}
+
+	public void setApellido(String apellido) {
+		this.apellido = apellido;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+	public String toString() {
+		return this.getDocumento() +"\n" + this.getApellido()+ "\n"+ this.getNombre(); 
+	}
 	
-	
-		private String Apellido;
-		
-		private int Doc;
-		
-		private String Nombre;
-		
-		public Obj_estudiante (String nombre,String apellido,int doc)
-		{
-			Doc = doc ;
-			Apellido = apellido;
-			Nombre = nombre;
-		}
-
-		public String getApellido() {
-			return Apellido;
-		}
-
-		public void setApellido(String apellido) {
-			Apellido = apellido;
-		}
-
-		public int getDoc() {
-			return Doc;
-		}
-
-		public void setDoc(int doc) {
-			Doc = doc;
-		}
-
-		public String getNombre() {
-			return Nombre;
-		}
-
-		public void setNombre(String nombre) {
-			Nombre = nombre;
-		}
-		
-		
 
 }
+
+hemos mejoreado el codigo que lee y escribe los nuevos datos, aprendimos a usar el StringTokenizer ya que en los datos limpios el apellido y nombre se encuentran en la misma celda y para compararlos necesitamos que esten en celdas diferentes
+
+	package excel_apachePOI;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRichTextString;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import com.sun.org.apache.xpath.internal.operations.Variable;
+
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Cell;
+
+import java.io.FileOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import acm.program.ConsoleProgram;
+
+public class Excel extends ConsoleProgram {
+	
+	
+	public void run()
+	{
+		File f = new File("C:\\\\Users\\prestamour\\Documents\\ejemplo1.xlsx");
+		if (f.exists())
+		{
+			leerArchivosDeExcel(f);
+		}
+	}
+	
+	public void escribirArchivoDeExcel(String valor0,String valor1,String valor3,int j)
+	{
+		HSSFWorkbook libro = new HSSFWorkbook();
+		HSSFSheet hoja = libro.createSheet();
+		HSSFRow fila = hoja.createRow(j);
+		HSSFCell celda0 = fila.createCell(0);
+		celda0.setCellValue(valor0);
+		HSSFCell celda1 = fila.createCell(1);
+		celda1.setCellValue(valor1);
+		HSSFCell celda2 = fila.createCell(2);
+		celda2.setCellValue(valor3);
+		
+		try
+		{
+			FileOutputStream output = new FileOutputStream("E:\\\\ProyectoEnsayo_ApachePOI\\data\\Registro1.xlsx"); 
+			libro.write(output); 
+			output.close(); 
+		}catch (Exception e) {
+			println("El archivo no pudo leerse");
+		}
+	}
+	
+	
+	
+	private void obtener(List cellDataList)
+	{
+		
+		for (int i = 0;i < cellDataList.size();i ++)
+		{
+			List cellTempList = (List) cellDataList.get(i);
+			//for(int j = 0;j < 3;j++)
+			//{
+				
+				XSSFCell xssfcell0 = (XSSFCell) cellTempList.get(0);
+				XSSFCell xssfcell1 = (XSSFCell) cellTempList.get(1);
+				XSSFCell xssfcell3 = (XSSFCell) cellTempList.get(3);
+				String cellvalue0 = xssfcell0.toString();
+				String cellvalue1 = xssfcell1.toString();
+				String cellvalue3 = xssfcell3.toString();
+				escribirArchivoDeExcel(cellvalue0,cellvalue1,cellvalue3,i);
+				/*print(cellvalue0 +"\t");
+				print(cellvalue1 +"\t");
+				print(cellvalue3 +"\t");
+				println(" ");*/
+			//}
+			
+		
+		}
+		
+	}
+	
+	
+	public void leerArchivosDeExcel(File fileName) {
+		List TodosEstudiantes = new ArrayList();
+		try {
+			FileInputStream fileInputStream = new FileInputStream(fileName);
+			XSSFWorkbook workBook = new XSSFWorkbook(fileInputStream);
+			XSSFSheet hssfSheet = workBook.getSheetAt(0);
+			Iterator rowIterator = hssfSheet.rowIterator();
+			while(rowIterator.hasNext())
+			{
+				XSSFRow hssfRow = (XSSFRow) rowIterator.next();
+				Iterator iterator = hssfRow.cellIterator();
+				List estudiante = new ArrayList();
+				while (iterator.hasNext())
+				{
+					XSSFCell hssfCell = (XSSFCell) iterator.next();
+					estudiante.add(hssfCell);			
+				}
+				TodosEstudiantes.add(estudiante);
+				
+			}
+		}catch (Exception e) {
+			println("El archivo no pudo leerse");
+		}
+		obtener(TodosEstudiantes);
+		println(TodosEstudiantes.get(0));
+		
+		
+	}
+
+	
+
+
+}	
+		
+
+
 
 
 
